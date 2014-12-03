@@ -44,7 +44,7 @@ public class PersonServiceImpl implements PersonService {
 			LOGGER.debug("No person found with id: " + personId);
 			throw new PersonNotFoundException();
 		}		
-		personRepository.delete(personId);
+		personRepository.delete(deleted);
 		return deleted;
 	}
 	
