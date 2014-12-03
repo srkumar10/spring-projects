@@ -11,6 +11,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Version;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -70,13 +71,18 @@ public class Person {
 		return name.toString();
 	}
 	
+	public void update(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+	
 	@PreUpdate
 	public void preUpdate() {
 		modificationtime = new Date();
 	}
 	
 	@PrePersist
-	public void prePersisit() {
+	public void prePersist() {
 		Date now = new Date();
 		creationTime = now;
 		modificationtime = now;				

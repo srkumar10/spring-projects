@@ -154,6 +154,13 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
+		<!--  Mockito test framework for mocking -->
+		<dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.8.5</version>
+            <scope>test</scope>
+        </dependency>
 
 		<!-- Spring Security -->
 		<dependency>
