@@ -2,10 +2,6 @@ package com.ouc.customerportal.service;
 
 import java.util.List;
 
-
-
-
-
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -13,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ouc.customerportal.dto.PersonDTO;
+import com.ouc.customerportal.dto.SearchDTO;
+import com.ouc.customerportal.dto.SearchType;
 import com.ouc.customerportal.model.Person;
 import com.ouc.customerportal.repository.PersonRepository;
 
@@ -83,6 +81,40 @@ public class PersonServiceImpl implements PersonService {
      */
     protected void setPersonRepository(PersonRepository personRepository) {
         this.personRepository = personRepository;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Person> search(SearchDTO searchCriteria) {
+        LOGGER.debug("Searching persons with search criteria: " + searchCriteria);
+        
+        String searchTerm = searchCriteria.getSearchTerm();
+        SearchType searchType = searchCriteria.getSearchType();
+        
+        if (searchType == null) {
+            throw new IllegalArgumentException();
+        }
+         
+        return findPersonsBySearchType(searchTerm, searchType);
+    }
+    
+    private List<Person> findPersonsBySearchType(String searchTerm, SearchType searchType) {
+        List<Person> persons;
+
+        if (searchType == SearchType.METHOD_NAME) {
+            LOGGER.debug("Searching persons by using method name query creation.");
+            persons = personRepository.findByLastName(searchTerm);
+        }
+        else if (searchType == SearchType.NAMED_QUERY) {
+            LOGGER.debug("Searching persons by using named query");
+            persons = personRepository.findByName(searchTerm);
+        }
+        else {
+            LOGGER.debug("Searching persons by using query annotation");
+            persons = personRepository.find(searchTerm);
+        }
+
+        return persons;
     }
 
 }

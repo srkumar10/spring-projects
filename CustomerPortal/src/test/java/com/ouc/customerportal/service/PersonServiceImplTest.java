@@ -1,16 +1,20 @@
 package com.ouc.customerportal.service;
 
-
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+
+
+
+
 
 
 
@@ -20,6 +24,8 @@ import org.mockito.ArgumentCaptor;
 
 import com.customerportal.model.PersonTestUtil;
 import com.ouc.customerportal.dto.PersonDTO;
+import com.ouc.customerportal.dto.SearchDTO;
+import com.ouc.customerportal.dto.SearchType;
 import com.ouc.customerportal.model.Person;
 import com.ouc.customerportal.repository.PersonRepository;
 
@@ -140,6 +146,66 @@ public class PersonServiceImplTest {
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getFirstName(), actual.getFirstName());
         assertEquals(expected.getLastName(), expected.getLastName());
+    }
+	
+	// TEST CASES for testing Custom Query Methods:
+	
+	@Test
+    public void searchWhenSearchTypeIsMethodName() {
+        SearchDTO searchCriteria = createSearchDTO(LAST_NAME, SearchType.METHOD_NAME);
+        List<Person> expected = new ArrayList<Person>();
+        when(personRepositoryMock.findByLastName(searchCriteria.getSearchTerm())).thenReturn(expected);
+        
+        List<Person> actual = personService.search(searchCriteria);
+        
+        verify(personRepositoryMock, times(1)).findByLastName(searchCriteria.getSearchTerm());
+        verifyNoMoreInteractions(personRepositoryMock);
+        
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void searchWhenSearchTypeIsNamedQuery() {
+        SearchDTO searchCriteria = createSearchDTO(LAST_NAME, SearchType.NAMED_QUERY);
+        List<Person> expected = new ArrayList<Person>();
+        when(personRepositoryMock.findByName(searchCriteria.getSearchTerm())).thenReturn(expected);
+
+        List<Person> actual = personService.search(searchCriteria);
+
+        verify(personRepositoryMock, times(1)).findByName(searchCriteria.getSearchTerm());
+        verifyNoMoreInteractions(personRepositoryMock);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void searchWhenSearchTypeIsQueryAnnotation() {
+        SearchDTO searchCriteria = createSearchDTO(LAST_NAME, SearchType.QUERY_ANNOTATION);
+        List<Person> expected = new ArrayList<Person>();
+        when(personRepositoryMock.find(searchCriteria.getSearchTerm())).thenReturn(expected);
+
+        List<Person> actual = personService.search(searchCriteria);
+
+        verify(personRepositoryMock, times(1)).find(searchCriteria.getSearchTerm());
+        verifyNoMoreInteractions(personRepositoryMock);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void searchWhenSearchTypeIsNull() {
+        SearchDTO searchCriteria = createSearchDTO(LAST_NAME, null);
+
+        personService.search(searchCriteria);
+
+        verifyZeroInteractions(personRepositoryMock);
+    }
+    
+    private SearchDTO createSearchDTO(String searchTerm, SearchType searchType) {
+        SearchDTO searchCriteria = new SearchDTO();
+        searchCriteria.setSearchTerm(searchTerm);
+        searchCriteria.setSearchType(searchType);
+        return searchCriteria;
     }
 
 }

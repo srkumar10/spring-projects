@@ -3,6 +3,7 @@ package com.ouc.customerportal.service;
 import java.util.List;
 
 import com.ouc.customerportal.dto.PersonDTO;
+import com.ouc.customerportal.dto.SearchDTO;
 import com.ouc.customerportal.model.Person;
 
 /**
@@ -50,5 +51,16 @@ public interface PersonService {
      * @throws PersonNotFoundException  if no person is found with given id.
      */
     public Person update(PersonDTO updated) throws PersonNotFoundException;
+    
+    
+    /**
+     * This methods is used for searching the persons based on the type of Query using searchCriteria
+     * Searches persons by using the search criteria given as a parameter.
+     * @param searchCriteria
+     * @return  A list of persons matching with the search criteria. If no persons is found, this method
+     *          returns an empty list.
+     * @throws IllegalArgumentException if search type is not given.
+     */
+    public List<Person> search(SearchDTO searchCriteria);
 
 }
